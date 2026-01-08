@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import axios from "axios";
-const API_URL = import.meta.MODE ? "http://localhost:5000/api/auth/": "/api/auth";
+const API_URL = import.meta.MODE
+  ? "http://localhost:5000/api/auth/"
+  : "/api/auth";
 
 axios.defaults.withCredentials = true;
 export const AuthStore = create((set) => ({
@@ -87,21 +89,22 @@ export const AuthStore = create((set) => ({
     }
   },
   checkAuth: async () => {
-    set({ isCheckingAuth: true });
-
+    set({ isCheckingAuth: true, error: null });
     try {
-      const response = await axios.get(`${API_URL}check-auth`);
-
+      const response = await axios.get(`${API_URL}/check-auth`);
+      // On met tout à jour d'un coup
       set({
         user: response.data.user,
         isAuthenticated: true,
         isCheckingAuth: false,
       });
-    } catch {
+    } catch (error) {
+      // En cas d'erreur, on reset tout pour éviter les faux positifs
       set({
         user: null,
-        isAuthenticated: false,
+        error: null,
         isCheckingAuth: false,
+        isAuthenticated: false,
       });
     }
   },
