@@ -11,15 +11,18 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 
-
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, user } = AuthStore();
+  const { isAuthenticated, user, isCheckingAuth } = AuthStore();
+
+  if (isCheckingAuth) {
+    return <LoadingSpinner />;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
-  if (!user.isVerified) {
+  if (!user?.isVerified) {
     return <Navigate to="/verify-email" replace />;
   }
 
